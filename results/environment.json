@@ -1,0 +1,23 @@
+{
+  "generated_at_utc": "2026-10-14T17:01:06Z",
+  "python": "3.12.3",
+  "platform": "Linux-6.12.94+-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "cpu_model": "Intel(R) Xeon(R) Processor",
+  "cpu_count": 4,
+  "cpu_flags_of_interest": [
+    "aes",
+    "avx2",
+    "avx512f",
+    "sha_ni"
+  ],
+  "cryptography": "50.0.2",
+  "iterations": 80,
+  "warmup": 10,
+  "rsa_keygen_iteration_cap": 8,
+  "probe_timestamp_ms": 1760443200000,
+  "sign_probe_bytes": 257,
+  "method": "Single-threaded CPython. Wall time is time.perf_counter_ns and CPU time is time.process_time_ns, both converted to milliseconds. Warmup calls are discarded. The p95 is the nearest-rank statistic at ceil(0.95*n). Handshake time is the sum of the initiator and the responder in one process, with no MQTT hop. DH-style encapsulation includes ephemeral key generation; ML-KEM encapsulation does not. RSA-3072 key generation is capped because it is a commissioning cost, not a per-packet cost.",
+  "liboqs": "0.16.0",
+  "liboqs_python": "0.16.0.1"
+}

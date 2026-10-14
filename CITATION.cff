@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: "PQC Smart City Lab"
+message: "If you use this lab in a comparison, cite the software and regenerate the measurements on your own hardware."
+type: software
+authors:
+  - family-names: Paluch
+    given-names: Lukasz
+version: 0.1.0
+date-released: 2026-10-14
+license: MIT
+repository-code: "https://github.com/lp830623/CODEX_DEMO_pqc-smartcity-lab"
