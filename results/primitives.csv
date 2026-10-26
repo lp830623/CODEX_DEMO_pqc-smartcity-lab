@@ -1,0 +1,13 @@
+algorithm,role,public_bytes,secret_bytes,artifact_bytes,artifact,shared_secret_bytes,standard_public_bytes,standard_secret_bytes,standard_artifact_bytes
+X25519,kem,32,32,32,ciphertext,32,,,
+ECDH-P-256,kem,65,32,65,ciphertext,32,,,
+RSA-3072-OAEP,kem,384,1794,384,ciphertext,32,,,
+Ed25519,sig,32,32,64,signature,,,,
+ECDSA-P-256,sig,65,32,72,signature,,,,
+RSA-3072-PSS,sig,384,1794,384,signature,,,,
+ML-KEM-512,kem,800,1632,768,ciphertext,32,800,1632,768
+ML-KEM-768,kem,1184,2400,1088,ciphertext,32,1184,2400,1088
+ML-KEM-1024,kem,1568,3168,1568,ciphertext,32,1568,3168,1568
+ML-DSA-44,sig,1312,2560,2420,signature,,1312,2560,2420
+ML-DSA-65,sig,1952,4032,3309,signature,,1952,4032,3309
+ML-DSA-87,sig,2592,4896,4627,signature,,2592,4896,4627

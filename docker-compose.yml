@@ -1,0 +1,73 @@
+name: pqc-smartcity-lab
+
+services:
+  broker:
+    image: eclipse-mosquitto:2
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./deploy/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-h", "127.0.0.1", "-t", "$$SYS/broker/version", "-C", "1", "-W", "3"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+
+  provision:
+    build: .
+    command: ["provision"]
+    environment:
+      CITYLINK_SUITE: ${CITYLINK_SUITE:-mlkem768-mldsa65}
+      CITYLINK_PROFILE: ${CITYLINK_PROFILE:-ephemeral}
+      CITYLINK_GATEWAY_SECRET: /keys/gateway.secret.json
+      CITYLINK_SENSOR_DIR: /sensor-keys
+      CITYLINK_TRUST_DIR: /trust
+    volumes:
+      - gateway-keys:/keys
+      - sensor-keys:/sensor-keys
+      - trust:/trust
+    restart: "no"
+
+  gateway:
+    build: .
+    command: ["gateway"]
+    environment:
+      CITYLINK_MQTT_HOST: broker
+      CITYLINK_MQTT_PORT: "1883"
+      CITYLINK_GATEWAY_SECRET: /keys/gateway.secret.json
+      CITYLINK_TRUST_DIR: /trust
+      CITYLINK_TELEMETRY: ${CITYLINK_TELEMETRY:-signed}
+    volumes:
+      - gateway-keys:/keys:ro
+      - trust:/trust:ro
+    depends_on:
+      provision:
+        condition: service_completed_successfully
+      broker:
+        condition: service_healthy
+
+  sensors:
+    build: .
+    command: ["sensors"]
+    environment:
+      CITYLINK_MQTT_HOST: broker
+      CITYLINK_MQTT_PORT: "1883"
+      CITYLINK_SENSOR_DIR: /sensor-keys
+      CITYLINK_TRUST_DIR: /trust
+      CITYLINK_COUNT: ${CITYLINK_COUNT:-6}
+      CITYLINK_INTERVAL: ${CITYLINK_INTERVAL:-1}
+      CITYLINK_TELEMETRY: ${CITYLINK_TELEMETRY:-signed}
+    volumes:
+      - sensor-keys:/sensor-keys:ro
+      - trust:/trust:ro
+    depends_on:
+      provision:
+        condition: service_completed_successfully
+      gateway:
+        condition: service_started
+
+volumes:
+  gateway-keys:
+  sensor-keys:
+  trust:

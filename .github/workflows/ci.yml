@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OQS_INSTALL_PATH: ${{ github.workspace }}/.oqs
+      LD_LIBRARY_PATH: ${{ github.workspace }}/.oqs/lib
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install compilers and a local MQTT broker
+        run: |
+          sudo DEBIAN_FRONTEND=noninteractive apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build pkg-config libssl-dev \
+            mosquitto mosquitto-clients
+      - name: Cache the liboqs build
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.oqs
+          key: liboqs-0.16.0-${{ runner.os }}-py3.12-v1
+      - name: Install the lab
+        run: |
+          python -m pip install -U pip
+          python -m pip install -e ".[dev]"
+      - name: Build or load liboqs
+        run: python -c "import oqs; print('liboqs', oqs.oqs_version()); print('wrapper', oqs.oqs_python_version())"
+      - name: Tests
+        run: python -m pytest -q
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image and run the in-process demo
+        run: |
+          docker build -t pqc-smartcity-lab .
+          docker run --rm pqc-smartcity-lab demo --messages 1
